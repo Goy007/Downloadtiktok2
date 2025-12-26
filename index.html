@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>TikTok Downloader</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --cyan:#00f2ea;
+  --pink:#ff0050;
+  --dark:#0b0b0f;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family: 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at top, #111 0%, #000 60%),
+    linear-gradient(120deg, var(--cyan), var(--pink));
+  color:#fff;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  padding:24px;
+}
+
+.card{
+  background:rgba(15,15,25,.9);
+  border-radius:18px;
+  padding:25px;
+  box-shadow:
+    0 0 25px rgba(0,242,234,.25),
+    0 0 40px rgba(255,0,80,.15);
+  animation: pop .6s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.9);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+h1{
+  text-align:center;
+  margin-bottom:10px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+p{
+  text-align:center;
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  outline:none;
+  font-size:14px;
+  background:#0f0f18;
+  color:#fff;
+  box-shadow:inset 0 0 0 1px #222;
+}
+
+button{
+  width:100%;
+  margin-top:14px;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));
+  color:#000;
+  transition:.3s;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 0 15px rgba(0,242,234,.6);
+}
+
+.loading{
+  text-align:center;
+  margin-top:14px;
+  font-size:14px;
+  opacity:.8;
+}
+
+.result a{
+  display:block;
+  margin-top:12px;
+  padding:12px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:600;
+  color:#fff;
+  text-decoration:none;
+  background:#111;
+  box-shadow:0 0 0 1px #222;
+  transition:.3s;
+}
+
+.result a:hover{
+  box-shadow:
+    0 0 12px rgba(0,242,234,.4),
+    0 0 20px rgba(255,0,80,.3);
+}
+
+footer{
+  text-align:center;
+  font-size:11px;
+  opacity:.4;
+  margin-top:16px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <h1>⚡ TikTok Downloader</h1>
+    <p>Download video TikTok tanpa watermark</p>
+
+    <input id="url" placeholder="Paste link TikTok di sini">
+
+    <button onclick="download()">Download</button>
+
+    <div class="loading" id="loading"></div>
+    <div class="result" id="result"></div>
+  </div>
+
+  <footer>© 2025 • Free TikTok Downloader</footer>
+</div>
+
+<script>
+async function download(){
+  const url = document.getElementById('url').value.trim()
+  const loading = document.getElementById('loading')
+  const result = document.getElementById('result')
+
+  result.innerHTML=''
+  if(!url){
+    alert('Link TikTok belum diisi')
+    return
+  }
+
+  loading.innerText='⚡ Mengambil video...'
+
+  try{
+    const api = `https://tikwm.com/api/?url=${encodeURIComponent(url)}`
+    const res = await fetch(api)
+    const data = await res.json()
+
+    if(!data.data){
+      loading.innerText='❌ Video gagal diambil'
+      return
+    }
+
+    loading.innerText=''
+
+    result.innerHTML=`
+      <a href="${data.data.play}" target="_blank">🎬 Download Video</a>
+      <a href="${data.data.music}" target="_blank">🎵 Download Audio</a>
+    `
+  }catch(e){
+    loading.innerText='❌ API error / limit'
+  }
+}
+</script>
+
+</body>
+</html>
+  
