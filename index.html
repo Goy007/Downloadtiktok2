@@ -1,188 +1,645 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>TikTok Downloader</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>TikTok Downloader Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <style>
+        :root {
+            --primary: #00f2ea;
+            --secondary: #ff0050;
+            --dark: #0f0f1f;
+            --darker: #0a0a14;
+            --light: #ffffff;
+            --gray: #888;
+            --success: #00d26a;
+            --warning: #ffaa00;
+            --error: #ff4757;
+        }
 
-<style>
-:root{
-  --cyan:#00f2ea;
-  --pink:#ff0050;
-  --dark:#0b0b0f;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
 
-*{box-sizing:border-box}
+        body {
+            background: linear-gradient(135deg, #000428, #004e92);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-body{
-  margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-family: 'Segoe UI', sans-serif;
-  background:
-    radial-gradient(circle at top, #111 0%, #000 60%),
-    linear-gradient(120deg, var(--cyan), var(--pink));
-  color:#fff;
-}
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
 
-.container{
-  width:100%;
-  max-width:420px;
-  padding:24px;
-}
+        .card {
+            background: rgba(15, 15, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(0, 242, 234, 0.1),
+                0 0 50px rgba(255, 0, 80, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.6s ease-out;
+        }
 
-.card{
-  background:rgba(15,15,25,.9);
-  border-radius:18px;
-  padding:25px;
-  box-shadow:
-    0 0 25px rgba(0,242,234,.25),
-    0 0 40px rgba(255,0,80,.15);
-  animation: pop .6s ease;
-}
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-@keyframes pop{
-  from{transform:scale(.9);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
 
-h1{
-  text-align:center;
-  margin-bottom:10px;
-  background:linear-gradient(90deg,var(--cyan),var(--pink));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
+        .logo {
+            font-size: 42px;
+            margin-bottom: 10px;
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
 
-p{
-  text-align:center;
-  font-size:14px;
-  opacity:.8;
-  margin-bottom:20px;
-}
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
 
-input{
-  width:100%;
-  padding:14px;
-  border-radius:12px;
-  border:none;
-  outline:none;
-  font-size:14px;
-  background:#0f0f18;
-  color:#fff;
-  box-shadow:inset 0 0 0 1px #222;
-}
+        h1 {
+            font-size: 28px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
 
-button{
-  width:100%;
-  margin-top:14px;
-  padding:14px;
-  border:none;
-  border-radius:12px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
-  background:linear-gradient(90deg,var(--cyan),var(--pink));
-  color:#000;
-  transition:.3s;
-}
+        .subtitle {
+            color: var(--gray);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
 
-button:hover{
-  transform:translateY(-1px);
-  box-shadow:0 0 15px rgba(0,242,234,.6);
-}
+        .url-input-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
 
-.loading{
-  text-align:center;
-  margin-top:14px;
-  font-size:14px;
-  opacity:.8;
-}
+        .url-input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            background: rgba(10, 10, 20, 0.8);
+            color: var(--light);
+            font-size: 15px;
+            transition: all 0.3s;
+            outline: none;
+        }
 
-.result a{
-  display:block;
-  margin-top:12px;
-  padding:12px;
-  border-radius:12px;
-  text-align:center;
-  font-weight:600;
-  color:#fff;
-  text-decoration:none;
-  background:#111;
-  box-shadow:0 0 0 1px #222;
-  transition:.3s;
-}
+        .url-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 234, 0.3);
+        }
 
-.result a:hover{
-  box-shadow:
-    0 0 12px rgba(0,242,234,.4),
-    0 0 20px rgba(255,0,80,.3);
-}
+        .url-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 18px;
+        }
 
-footer{
-  text-align:center;
-  font-size:11px;
-  opacity:.4;
-  margin-top:16px;
-}
-</style>
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(0, 242, 234, 0.2);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-container {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .video-preview {
+            margin-bottom: 25px;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .video-thumbnail:hover {
+            transform: scale(1.02);
+        }
+
+        .video-info {
+            background: rgba(10, 10, 20, 0.6);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .video-title {
+            color: var(--light);
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-stats {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .download-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .download-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: rgba(10, 10, 20, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: var(--light);
+            text-decoration: none;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .download-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .download-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .video-btn .download-icon {
+            color: var(--primary);
+        }
+
+        .audio-btn .download-icon {
+            color: var(--secondary);
+        }
+
+        .btn-label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .btn-subtext {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .quality-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quality-btn {
+            padding: 10px;
+            background: rgba(10, 10, 20, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--light);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quality-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .quality-btn.active {
+            background: rgba(0, 242, 234, 0.2);
+            border-color: var(--primary);
+        }
+
+        .history {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history h3 {
+            color: var(--light);
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(10, 10, 20, 0.6);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: rgba(20, 20, 40, 0.8);
+        }
+
+        .history-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .history-title {
+            color: var(--light);
+            font-size: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--gray);
+            font-size: 13px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .warning {
+            background: rgba(255, 71, 87, 0.1);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: var(--light);
+            text-align: center;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 13px;
+        }
+
+        .feature i {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .download-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .quality-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .feature-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="logo">
+                    <i class="fab fa-tiktok"></i>
+                </div>
+                <h1>TikTok Downloader Pro</h1>
+                <p class="subtitle">Unduh video TikTok tanpa watermark dengan kualitas terbaik</p>
+            </div>
 
-<div class="container">
-  <div class="card">
-    <h1>⚡ TikTok Downloader</h1>
-    <p>Download video TikTok tanpa watermark</p>
+            <div class="feature-list">
+                <div class="feature">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Tanpa Watermark</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-music"></i>
+                    <span>Audio Terpisah</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-hd"></i>
+                    <span>Kualitas HD</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-bolt"></i>
+                    <span>Cepat & Gratis</span>
+                </div>
+            </div>
 
-    <input id="url" placeholder="Paste link TikTok di sini">
+            <div class="warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                Hanya untuk konten publik. Patuhi hak cipta dan Terms of Service TikTok.
+            </div>
 
-    <button onclick="download()">Download</button>
+            <div class="url-input-container">
+                <i class="fas fa-link url-icon"></i>
+                <input type="text" id="urlInput" class="url-input" 
+                       placeholder="Tempel link TikTok di sini (contoh: https://vm.tiktok.com/xxxxx)">
+            </div>
 
-    <div class="loading" id="loading"></div>
-    <div class="result" id="result"></div>
-  </div>
+            <button id="downloadBtn" class="btn">
+                <i class="fas fa-download"></i>
+                <span>Download Video</span>
+            </button>
 
-  <footer>© 2025 • Free TikTok Downloader</footer>
-</div>
+            <div id="loadingContainer" class="loading-container">
+                <div class="spinner"></div>
+                <p>Sedang memproses video...</p>
+                <p style="font-size: 12px; color: var(--gray); margin-top: 10px;">Ini mungkin memerlukan waktu beberapa detik</p>
+            </div>
 
-<script>
-async function download(){
-  const url = document.getElementById('url').value.trim()
-  const loading = document.getElementById('loading')
-  const result = document.getElementById('result')
+            <div id="resultContainer" class="result-container">
+                <div class="video-preview">
+                    <img id="videoThumbnail" class="video-thumbnail" src="" alt="Thumbnail">
+                    <div class="video-info">
+                        <div id="videoTitle" class="video-title"></div>
+                        <div class="video-stats">
+                            <span><i class="far fa-heart"></i> <span id="likeCount">0</span></span>
+                            <span><i class="far fa-comment"></i> <span id="commentCount">0</span></span>
+                            <span><i class="fas fa-share"></i> <span id="shareCount">0</span></span>
+                        </div>
+                    </div>
+                </div>
 
-  result.innerHTML=''
-  if(!url){
-    alert('Link TikTok belum diisi')
-    return
-  }
+                <div class="quality-options" id="qualityOptions">
+                    <!-- Quality buttons will be added here dynamically -->
+                </div>
 
-  loading.innerText='⚡ Mengambil video...'
+                <div class="download-options">
+                    <a id="videoDownloadBtn" class="download-btn video-btn" href="#" target="_blank">
+                        <i class="fas fa-video download-icon"></i>
+                        <span class="btn-label">Download Video</span>
+                        <span class="btn-subtext">MP4 • HD</span>
+                    </a>
+                    <a id="audioDownloadBtn" class="download-btn audio-btn" href="#" target="_blank">
+                        <i class="fas fa-music download-icon"></i>
+                        <span class="btn-label">Download Audio</span>
+                        <span class="btn-subtext">MP3 • HQ</span>
+                    </a>
+                </div>
 
-  try{
-    const api = `https://tikwm.com/api/?url=${encodeURIComponent(url)}`
-    const res = await fetch(api)
-    const data = await res.json()
+                <div class="history">
+                    <h3><i class="fas fa-history"></i> Riwayat Unduhan</h3>
+                    <div id="historyList">
+                        <!-- History items will be added here -->
+                    </div>
+                </div>
+            </div>
 
-    if(!data.data){
-      loading.innerText='❌ Video gagal diambil'
-      return
-    }
+            <div class="footer">
+                <p>© 2024 TikTok Downloader Pro • Dibuat dengan <i class="fas fa-heart" style="color: var(--secondary)"></i></p>
+                <p style="font-size: 11px; margin-top: 5px;">Gunakan dengan bijak. Kami tidak menyimpan video Anda.</p>
+            </div>
+        </div>
+    </div>
 
-    loading.innerText=''
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    <script>
+        // Konfigurasi Toastr
+        toastr.options = {
+            positionClass: 'toast-top-right',
+            progressBar: true,
+            closeButton: true,
+            timeOut: 3000
+        };
 
-    result.innerHTML=`
-      <a href="${data.data.play}" target="_blank">🎬 Download Video</a>
-      <a href="${data.data.music}" target="_blank">🎵 Download Audio</a>
-    `
-  }catch(e){
-    loading.innerText='❌ API error / limit'
-  }
-}
-</script>
+        // DOM Elements
+        const urlInput = document.getElementById('urlInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const videoThumbnail = document.getElementById('videoThumbnail');
+        const videoTitle = document.getElementById('videoTitle');
+        const likeCount = document.getElementById('likeCount');
+        const commentCount = document.getElementById('commentCount');
+        const shareCount = document.getElementById('shareCount');
+        const qualityOptions = document.getElementById('qualityOptions');
+        const videoDownloadBtn = document.getElementById('videoDownloadBtn');
+        const audioDownloadBtn = document.getElementById('audioDownloadBtn');
+        const historyList = document.getElementById('historyList');
 
-</body>
-</html>
-  
+        // API endpoints (multiple backup APIs)
+        const APIs = [
+            'https://tikwm.com/api/',
+            'https://www.tikwm.com/api/',
+            'https://api.tikmate.app/api/lookup'
+        ];
+
+        let currentAPI = 0;
+        let currentVideoData = null;
+        let downloadHistory = JSON.parse(localStorage.getItem('tiktokHistory')) || [];
+
+        // Initialize history
+        renderHistory();
+
+        // Enter key support
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                downloadBtn.click();
+            }
+        });
+
+        // Download button click
+        downloadBtn.addEventListener('click', processVideo);
+
+        // Process video function
+        async function processVideo() {
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                toastr.error('Harap masukkan link TikTok');
+                urlInput.focus();
+                return;
+            }
+            
+            if (!isValidTikTokUrl(url)) {
+                toastr.error('Link TikTok tidak valid');
+                return;
+            }
+            
+            // Show loading
+            downloadBtn.disabled = true;
+            downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Memproses...</span>';
+            loadingContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            try {
+                const videoData = await fetchVideoData(url);
+                
+                if (videoData) {
+                    displayVideoInfo(videoData);
+                    addToHistory(videoData);
+                    toastr.success('Video berhasil diambil!');
+                } else {
+                    toastr.error('Gagal mengambil data video');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                toastr.error('Terjadi kesalahan. Coba lagi atau gunakan link lain.');
+            } finally {
+                // Reset button
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '<i class="fas fa-download"></i><span>Download Video</span>';
+                loadingContainer.style.display = 'none';
+            }
+        }
+
+        // Validate TikTok URL
+        function isValidTikTokUrl(url) {
+            const patterns = [
+                /tiktok\.com\/@[\w.]+\/video\/\d+/,
+                /vm\.tiktok\.com\/\w+/,
+                /vt\.tiktok\.com\/\w+/,
+                /tiktok\.com\/t\/\w+/
+            ];
+            return patterns.some(pattern => pattern.test(url));
+        }
+
+        // Fetch video data with multiple API fallback
+        async function fetchVideoData(url, apiIndex = 0) {
+            if (apiIndex >= APIs.length) {
+                return null;
+            }
+            
+            const apiUrl = APIs[apiIndex];
+            
+            try {
+                let response;
+                
+                if (apiUrl.includes('tikwm')) {
+                    response = await fetch(`${apiUrl}?url=${encodeURIComponent(url)}`);
+                } else if (apiUrl.includes('tikmate')) {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `url=${encodeURIComponent(url)}`
+                    });
+      
